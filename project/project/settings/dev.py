@@ -144,7 +144,7 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
-"session": {
+    "session": {
         # session数据信息：存到 1 号库
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://192.168.19.131:6379/1",
