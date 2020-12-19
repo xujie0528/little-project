@@ -47,4 +47,6 @@ class SMSCodeView(View):
         logger.info('短信验证码为{0}'.format(sms_code))
         redis_conn.set('sms_{0}'.format(mobile), sms_code, 300)
         CCP().send_template_sms(mobile, [sms_code, 5], 1)
+        from celery_tasks.sms.tasks import send_sms_code
+        send_sms_code.delay(mobile, sms_code)
         return JsonResponse({'code': 0, 'message':'短信发送成功'})
