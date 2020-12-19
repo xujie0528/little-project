@@ -2,7 +2,7 @@
 import json
 import re
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
 from django.views import View
 from django.http import JsonResponse
@@ -16,16 +16,18 @@ class UsernameCountView(View):
         try:
             count = User.objects.filter(username=username).count()
         except Exception as e:
-            return JsonResponse({'code': 400, 'message':'操作数据库失败'})
-        return JsonResponse({'code':0, 'message':'OK', 'count':count})
+            return JsonResponse({'code': 400, 'message': '操作数据库失败'})
+        return JsonResponse({'code': 0, 'message': 'OK', 'count': count})
+
 
 class MobileCountView(View):
     def get(self, request, mobile):
         try:
             count = User.objects.filter(mobile=mobile).count()
         except Exception as e:
-            return JsonResponse({'code': 400, 'message':'读取数据库错误'})
-        return JsonResponse({'code': 0, 'message': 'OK', 'count':count})
+            return JsonResponse({'code': 400, 'message': '读取数据库错误'})
+        return JsonResponse({'code': 0, 'message': 'OK', 'count': count})
+
 
 class RegisterView(View):
     def post(self, request):
@@ -82,9 +84,15 @@ class RegisterView(View):
 
         from django.contrib.auth import login
         login(request, user)
-            # ③ 返回响应
-        return JsonResponse({'code': 0,
-                             'message': 'OK'})
+        # ③ 返回响应
+        response = JsonResponse({'code': 0,
+                                 'message': 'OK'})
+        response.set_cookie('username',
+                            user.username,
+                            max_age=3600 * 24 * 14)
+
+        return response
+
 
 class CSRFTokenView(View):
     def get(self, request):
@@ -96,6 +104,7 @@ class CSRFTokenView(View):
         return JsonResponse({'code': 0,
                              'message': 'OK',
                              'csrf_token': csrf_token})
+
 
 class LoginView(View):
     def post(self, request):
@@ -117,16 +126,23 @@ class LoginView(View):
 
         if user is None:
             return JsonResponse({'code': 400,
-                             'message': '用户名或密码错误'})
+                                 'message': '用户名或密码错误'})
 
         # ② 保存登录用户的状态信息
 
         login(request, user)
 
         if not remember:
-        # 如果未选择记住登录，浏览器关闭即失效
+            # 如果未选择记住登录，浏览器关闭即失效
             request.session.set_expiry(0)
 
-    # ③ 返回响应，登录成功
-        return JsonResponse({'code': 0,
-                            'message': 'OK'})
+        # ③ 返回响应，登录成功
+        response = JsonResponse({'code': 0,
+                                 'message': 'OK'})
+
+        # 设置 cookie 保存 username 用户名
+        response.set_cookie('username',
+                            user.username,
+                            max_age=3600 * 24 * 14)
+
+        return response
