@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'corsheaders',
     'verifications.apps.VerificationsConfig',
+    'oauth.apps.OauthConfig',
 ]
 
 MIDDLEWARE = [
