@@ -2,6 +2,7 @@
 import json
 import re
 
+from django.contrib.auth import authenticate, login
 from django.middleware.csrf import get_token
 from django.views import View
 from django.http import JsonResponse
@@ -95,3 +96,31 @@ class CSRFTokenView(View):
         return JsonResponse({'code': 0,
                              'message': 'OK',
                              'csrf_token': csrf_token})
+
+class LoginView(View):
+    def post(self, request):
+        req_data = json.loads(request.body.decode())
+        username = req_data.get('username')
+        password = req_data.get('password')
+        remember = req_data.get('remember')
+
+        if not all([username, password]):
+            return JsonResponse({'code': 400,
+                                 'message': '缺少必传参数'})
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            return JsonResponse({'code': 400,
+                             'message': '用户名或密码错误'})
+
+        # ② 保存登录用户的状态信息
+
+        login(request, user)
+
+        if not remember:
+        # 如果未选择记住登录，浏览器关闭即失效
+            request.session.set_expiry(0)
+
+    # ③ 返回响应，登录成功
+        return JsonResponse({'code': 0,
+                            'message': 'OK'})
