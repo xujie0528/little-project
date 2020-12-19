@@ -104,6 +104,12 @@ class LoginView(View):
         password = req_data.get('password')
         remember = req_data.get('remember')
 
+        import re
+        if re.match(r'^1[3-9]\d{9}$', username):
+            User.USERNAME_FIELD = 'mobile'
+        else:
+            User.USERNAME_FIELD = 'username'
+
         if not all([username, password]):
             return JsonResponse({'code': 400,
                                  'message': '缺少必传参数'})
