@@ -146,3 +146,18 @@ class LoginView(View):
                             max_age=3600 * 24 * 14)
 
         return response
+
+class LogoutView(View):
+    def delete(self, request):
+        """退出登录"""
+        # ① 请求登录用户的session信息
+        logout(request)
+
+        # ② 删除cookie中的username
+        response = JsonResponse({'code': 0,
+                                 'message': 'ok'})
+
+        response.delete_cookie('username')
+
+        # ③ 返回响应
+        return response
