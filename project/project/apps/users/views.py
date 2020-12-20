@@ -148,6 +148,7 @@ class LoginView(View):
 
         return response
 
+
 class LogoutView(View):
     def delete(self, request):
         """退出登录"""
@@ -180,7 +181,8 @@ class UserInfoView(LoginRequiredMixin, View):
                              'message': 'OK',
                              'user': info})
 
-class UserEmailView(View):
+
+class UserEmailView(LoginRequiredMixin, View):
     def put(self, request):
         req_data = json.loads(request.body.decode())
         email = req_data.get('email')
@@ -199,6 +201,11 @@ class UserEmailView(View):
         except Exception as e:
             return JsonResponse({'code': 400,
                                  'message': '邮箱设置失败'})
+
+        from celery_tasks.email.tasks import send_verify_email
+        verify_url = 'http://邮件验证链接地址'
+        # 发出邮件发送的任务消息
+        send_verify_email.delay(email, verify_url)
 
         return JsonResponse({'code': 0,
                              'message': 'OK'})

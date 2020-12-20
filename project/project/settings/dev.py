@@ -217,3 +217,17 @@ LOGGING = {
 QQ_CLIENT_ID = '101474184'
 QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c'
 QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html'
+
+# 邮件发送 SMTP 服务配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# 我们使用的 SMTP 服务地址：
+EMAIL_HOST = 'smtp.qq.com'
+# SMTP 服务的端口号
+EMAIL_PORT = 25
+# 开启 SMTP 服务的邮箱：此处是你的网易163邮箱
+EMAIL_HOST_USER = '2422640226@qq.com'
+# 开启 SMTP 服务后显示的授权密码
+EMAIL_HOST_PASSWORD = 'ntjdyklapjvlebhj'
+EMAIL_USE_TLS = True
+# 收件人看到的发件人
+EMAIL_FROM = '美多商城<2422640226@qq.com>'
