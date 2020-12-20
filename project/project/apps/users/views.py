@@ -8,6 +8,7 @@ from django.views import View
 from django.http import JsonResponse
 from django_redis import get_redis_connection
 
+from project.utils.mixins import LoginRequiredMixin
 from users.models import User
 
 
@@ -161,3 +162,23 @@ class LogoutView(View):
 
         # ③ 返回响应
         return response
+
+
+class UserInfoView(LoginRequiredMixin, View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({'code': 400,
+                                 'message': '用户未登录!'})
+        user = request.user
+        info = {
+            'username': user.username,
+            'mobile': user.mobile,
+            'email': user.email,
+            'email_active': user.email_active
+        }
+        return JsonResponse({'code': 0,
+                             'message': 'OK',
+                             'user': info})
+
+
+

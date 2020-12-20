@@ -1,5 +1,6 @@
-from itsdangerous import TimedJSONWebSignatureSerializer
 from django.conf import settings
+from itsdangerous import BadData
+from itsdangerous import TimedJSONWebSignatureSerializer
 
 
 def generate_secret_openid(openid):
@@ -17,3 +18,13 @@ def generate_secret_openid(openid):
 
     # 返回加密之后的 openid
     return secret_openid
+
+
+def check_secret_openid(secert_openid):
+    serializer = TimedJSONWebSignatureSerializer(settings.SECRET_KEY)
+    try:
+        data = serializer.loads(secert_openid)
+    except BadData:
+        return None
+    else:
+        return data.get('openid')
