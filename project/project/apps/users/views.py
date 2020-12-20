@@ -180,5 +180,26 @@ class UserInfoView(LoginRequiredMixin, View):
                              'message': 'OK',
                              'user': info})
 
+class UserEmailView(View):
+    def put(self, request):
+        req_data = json.loads(request.body.decode())
+        email = req_data.get('email')
 
+        if not email:
+            return JsonResponse({'code': 400,
+                                 'message': '缺少email参数'})
+        if not re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$', email):
+            return JsonResponse({'code': 400,
+                                 'message': '参数email有误'})
+
+        user = request.user
+        try:
+            user.email = email
+            user.save()
+        except Exception as e:
+            return JsonResponse({'code': 400,
+                                 'message': '邮箱设置失败'})
+
+        return JsonResponse({'code': 0,
+                             'message': 'OK'})
 
