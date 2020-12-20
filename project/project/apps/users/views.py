@@ -167,9 +167,6 @@ class LogoutView(View):
 
 class UserInfoView(LoginRequiredMixin, View):
     def get(self, request):
-        if not request.user.is_authenticated:
-            return JsonResponse({'code': 400,
-                                 'message': '用户未登录!'})
         user = request.user
         info = {
             'username': user.username,
@@ -203,10 +200,35 @@ class UserEmailView(LoginRequiredMixin, View):
                                  'message': '邮箱设置失败'})
 
         from celery_tasks.email.tasks import send_verify_email
-        verify_url = 'http://邮件验证链接地址'
+        verify_url = user.generate_verify_email_url()
         # 发出邮件发送的任务消息
         send_verify_email.delay(email, verify_url)
 
+        return JsonResponse({'code': 0,
+                             'message': 'OK'})
+
+
+class EmailVerifyView(View):
+    def put(self, request):
+        token = request.GET.get('token')
+        if not token:
+            return JsonResponse({'code': 400,
+                                 'message': '缺少token参数'})
+
+            # 对用户的信息进行解密
+        user = User.check_verify_email_token(token)
+
+        if user is None:
+            return JsonResponse({'code': 400,
+                                 'message': 'token信息有误'})
+
+        try:
+            user.email_active = True
+            user.save()
+        except Exception as e:
+            return JsonResponse({'code': 400,
+                                 'message': '验证邮箱失败'})
+            # ③ 返回响应
         return JsonResponse({'code': 0,
                              'message': 'OK'})
 

@@ -231,3 +231,4 @@ EMAIL_HOST_PASSWORD = 'ntjdyklapjvlebhj'
 EMAIL_USE_TLS = True
 # 收件人看到的发件人
 EMAIL_FROM = '美多商城<2422640226@qq.com>'
+EMAIL_VERIFY_URL = 'http://www.meiduo.site:8080/success_verify_email.html?token='
