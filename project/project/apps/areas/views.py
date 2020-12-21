@@ -1,6 +1,5 @@
 from django.core.cache import cache
 from django.http import JsonResponse
-from django.shortcuts import render
 
 # Create your views here.
 from django.views import View
@@ -16,7 +15,6 @@ class ProvinceAreasView(View):
                 provinces = Area.objects.filter(parent=None).values('id', 'name')
                 provinces = list(provinces)
 
-                # 缓存省级地区数据
                 cache.set('provinces', provinces, 3600)
             except Exception as e:
                 return JsonResponse({'code': 400,
