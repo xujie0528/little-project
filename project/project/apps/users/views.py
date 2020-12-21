@@ -296,5 +296,119 @@ class AddressView(LoginRequiredMixin, View):
                              'message': 'OK',
                              'address': address_data})
 
-    # def get(self, request):
+    @staticmethod
+    def get(request):
+        user=request.user
+        address_list = []
+        try:
+            address_user = Address.objects.filter(user_id=user.id)
+        except Exception:
+            return JsonResponse({'code':400, 'message':'数据获取失败'})
+        for address in address_user:
+            if address.is_delete == False:
+                info = {
+                    'id': address.id,
+                    'title': address.title,
+                    'receiver': address.receiver,
+                    'province': str(address.province),
+                    'city': str(address.city),
+                    'district': str(address.district),
+                    'province_id': address.province_id,
+                    'city_id': address.city_id,
+                    'district_id': address.district_id,
+                    'place': address.place,
+                    'mobile': address.mobile,
+                    'phone': address.phone,
+                    'email': address.email
+                }
+                address_list.append(info)
+        return JsonResponse({'code': 0, 'message': 'OK',
+                             "default_address_id": user.default_address_id,
+                             'addresses': address_list})
 
+
+class UserUpdateView(View):
+    def put(self, request, address_id):
+
+        req_data = json.loads(request.body)
+
+        title = req_data.get('title')
+        receiver = req_data.get('receiver')
+        province_id = req_data.get('province_id')
+        city_id = req_data.get('city_id')
+        district_id = req_data.get('district_id')
+        place = req_data.get('place')
+        mobile = req_data.get('mobile')
+        phone = req_data.get('phone')
+        email = req_data.get('email')
+
+        address = Address.objects.get(id=address_id)
+
+        address.title = title
+        address.receiver = receiver
+        address.province_id = province_id
+        address.city_id = city_id
+        address.district_id = district_id
+        address.place = place
+        address.mobile = mobile
+        address.phone = phone
+        address.email = email
+
+        address.save()
+
+        return JsonResponse({'code': 0, 'message':'OK', 'address':req_data})
+
+    def delete(self, request, address_id):
+        try:
+            address = Address.objects.get(id=address_id)
+            address.is_delete = True
+            address.save()
+        except Exception:
+            return JsonResponse({'code':400, 'message':'数据获取失败'})
+        return JsonResponse({'code': 0, 'message':'OK'})
+
+# API: PUT /addresses/(?P<address_id>\d+)/default/
+class AddressesDefaultView(View):
+    def put(self, request, address_id):
+        user = request.user
+        user.default_address_id = address_id
+        user.save()
+        return JsonResponse({'code': 0, 'message':'OK'})
+
+# API: PUT /addresses/(?P<address_id>\d+)/title/
+class AddressTitleView(View):
+    def put(self, request, address_id):
+        address = Address.objects.get(id=address_id)
+        title_get = json.loads(request.body)
+        title = title_get.get('title')
+        address.title = title
+        address.save()
+        return JsonResponse({'code': 0, 'message':'OK'})
+
+
+# API: PUT /password/
+class PasswordUpdateView(LoginRequiredMixin, View):
+    def put(self, request):
+        password_set = json.loads(request.body)
+        old_password = password_set.get('old_password')
+        new_password = password_set.get('new_password')
+        new_password2 = password_set.get('new_password2')
+        users = request.user
+        if not all([old_password, new_password, new_password2]):
+            return JsonResponse({'code': 400,
+                                 'message': '缺少必传参数'})
+
+        if not re.match(r'^[a-zA-Z0-9]{8,20}$', new_password):
+            return JsonResponse({'code': 400,
+                                 'message': 'password格式错误'})
+
+        if new_password != new_password2:
+            return JsonResponse({'code': 400,
+                                 'message': '两次密码不一致'})
+
+        if users.check_password(old_password) == False:
+            return JsonResponse({'code':400, 'message': '两次密码cuowu'})
+
+        users.set_password(new_password)
+        users.save()
+        return JsonResponse({'code': 0, 'message': 'OK'})
