@@ -235,3 +235,7 @@ EMAIL_USE_TLS = True
 # 收件人看到的发件人
 EMAIL_FROM = '美多商城<2422640226@qq.com>'
 EMAIL_VERIFY_URL = 'http://www.meiduo.site:8080/success_verify_email.html?token='
+
+# 生成的静态 html 文件保存目录
+# GENERATED_STATIC_HTML_FILES_DIR：项目目录，即 meiduo 目录的绝对路径
+GENERATED_STATIC_HTML_FILES_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'front_end_pc')
