@@ -353,10 +353,21 @@ class UserUpdateView(View):
         address.mobile = mobile
         address.phone = phone
         address.email = email
-
         address.save()
 
-        return JsonResponse({'code': 0, 'message':'OK', 'address':req_data})
+        # info = {
+        #     'title': title,
+        #     'receiver': receiver,
+        #     'province_id': province_id,
+        #     'city_id': city_id,
+        #     'district_id': district_id,
+        #     'place': place,
+        #     'mobile': mobile,
+        #     'phone': phone,
+        #     'email': email
+        # }
+
+        return JsonResponse({'code': 0, 'message':'OK', 'address': req_data})
 
     def delete(self, request, address_id):
         try:
