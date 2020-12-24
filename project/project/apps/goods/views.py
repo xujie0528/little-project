@@ -7,6 +7,34 @@ from goods.models import GoodsCategory, SKU
 from goods.utils import get_breadcrumb
 
 
+class HotGoodsView(View):
+    def get(self, request, category_id):
+        # page = request.GET.get('page', 1)
+        # page_size = request.GET.get('page_size', 2)
+        ordering = request.GET.get('ordering', '-sales')
+        try:
+            skus = SKU.objects.filter(category_id=category_id,
+                                      is_launched=True).order_by(ordering)
+        except Exception as e:
+            return JsonResponse({'code': 400,
+                                 'message': '分类SKU商品数据获取错误'})
+        paginator = Paginator(skus, 2)
+        skus1 = paginator.get_page(1)
+
+        hot_skus = []
+        nginx_url = 'http://192.168.19.131:8888/'
+        for sku in skus1:
+            sku_dict = {
+                'id':sku.id,
+                'name':sku.name,
+                'price':sku.price,
+                'default_image_url': nginx_url + sku.default_image.name
+            }
+            hot_skus.append(sku_dict)
+        return JsonResponse({'code':0, 'message':'OK', 'count': paginator.num_pages, 'hot_skus':hot_skus})
+
+
+
 class SKUListView(View):
     def get(self, request, category_id):
         """分类商品数据获取"""
