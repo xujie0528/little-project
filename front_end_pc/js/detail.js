@@ -14,7 +14,7 @@ var vm = new Vue({
         sku_count: 1,
         sku_price: price,
         cart_total_count: 0, // 购物车总数量
-        cart: [], // 购物车数据
+        carts: [], // 购物车数据
         hots: [], // 热销商品
         cat: cat, // 商品类别
         comments: [], // 评论信息
@@ -153,7 +153,21 @@ var vm = new Vue({
         },
         // 获取热销商品数据
         get_hot_goods: function(){
-
+            // 请求获取热销商品数据
+            var url = this.host+'/hot/'+this.cat + '/'
+            axios.get(url, {
+                responseType: 'json',
+                withCredentials: true
+            })
+            .then(response => {
+                 this.hots = response.data.hot_skus
+                 for(let i=0; i<this.hots.length; i++){
+                    this.hots[i].url = '/goods/' + this.skus[i].id + ".html";
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            })
         },
         // 获取商品评价信息
         get_comments: function(){
