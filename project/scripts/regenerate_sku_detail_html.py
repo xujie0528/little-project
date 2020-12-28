@@ -38,14 +38,13 @@ def generate_static_sku_detail_html(sku_id):
     template = loader.get_template('detail.html')
     static_html = template.render(context)
 
-    # ③ 写入静态文件
+    # ③ 写入静态文件9
     save_path = os.path.join(settings.GENERATED_STATIC_HTML_FILES_DIR, 'goods/%s.html' % sku_id)
     with open(save_path, 'w', encoding='utf8') as f:
         f.write(static_html)
 
 
 if __name__ == '__main__':
-    # 获取所有sku商品的id
     skus = SKU.objects.values('id').order_by('id')
 
     iterator = skus.iterator(chunk_size=10)
