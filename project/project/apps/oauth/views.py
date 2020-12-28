@@ -3,6 +3,7 @@ import json
 import re
 from django_redis import get_redis_connection
 
+from carts.utils import CartHelper
 from users.models import User
 from oauth.utils import check_secret_openid
 
@@ -66,6 +67,8 @@ class QQUserView(View):
             response.set_cookie('username', user.username,
                                 max_age=3600 * 24 * 14)
 
+            cart_helper = CartHelper(request, response)
+            cart_helper.merge_cookie_cart_to_redis()
             return response
 
     def post(self, request):
@@ -137,6 +140,9 @@ class QQUserView(View):
         # 设置cookie
         response.set_cookie('username', user.username,
                             max_age=3600 * 24 * 14)
+
+        cart_helper = CartHelper(request, response)
+        cart_helper.merge_cookie_cart_to_redis()
 
         return response
 

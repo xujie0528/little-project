@@ -9,6 +9,8 @@ from django.http import JsonResponse
 from django_redis import get_redis_connection
 
 from project.utils.mixins import LoginRequiredMixin
+
+from carts.utils import CartHelper
 from users.models import User, Address
 
 
@@ -92,6 +94,9 @@ class RegisterView(View):
                             user.username,
                             max_age=3600 * 24 * 14)
 
+        cart_helper = CartHelper(request, response)
+        cart_helper.merge_cookie_cart_to_redis()
+
         return response
 
 
@@ -145,6 +150,9 @@ class LoginView(View):
         response.set_cookie('username',
                             user.username,
                             max_age=3600 * 24 * 14)
+
+        cart_helper = CartHelper(request, response)
+        cart_helper.merge_cookie_cart_to_redis()
 
         return response
 
