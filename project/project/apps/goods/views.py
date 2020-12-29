@@ -1,11 +1,16 @@
 # Create your views here.
+import json
+
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views import View
+from django_redis import get_redis_connection
 from haystack.views import SearchView
 from goods.models import GoodsCategory, SKU
 from goods.utils import get_breadcrumb
 from haystack.query import SearchQuerySet
+
+from project.utils.mixins import LoginRequiredMixin
 
 
 class HotGoodsView(View):
@@ -26,14 +31,13 @@ class HotGoodsView(View):
         nginx_url = 'http://192.168.19.131:8888/'
         for sku in skus1:
             sku_dict = {
-                'id':sku.id,
-                'name':sku.name,
-                'price':sku.price,
+                'id': sku.id,
+                'name': sku.name,
+                'price': sku.price,
                 'default_image_url': nginx_url + sku.default_image.name
             }
             hot_skus.append(sku_dict)
-        return JsonResponse({'code':0, 'message':'OK', 'count': paginator.num_pages, 'hot_skus':hot_skus})
-
+        return JsonResponse({'code': 0, 'message': 'OK', 'count': paginator.num_pages, 'hot_skus': hot_skus})
 
 
 class SKUListView(View):
@@ -91,6 +95,8 @@ class SKUListView(View):
                              'list': sku_li})
 
     # GET /search/?q=<关键字>&page=<页码>&page_size=<页容量>
+
+
 class SKUSearchView(View):
     def get(self, request):
         """SKU商品数据搜索"""
@@ -133,3 +139,39 @@ class SKUSearchView(View):
                              'page_size': paginator.per_page,
                              'query': keyword,
                              'skus': sku_li})
+
+
+class BrowseHistoriesView(LoginRequiredMixin, View):
+    def post(self, request):
+        req_data = json.loads(request.body.decode())
+        sku_id = req_data.get('sku_id')
+
+        try:
+            SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return JsonResponse({'code': 400, 'message': '商品id参数错误'})
+
+        user = request.user
+        redis_conn = get_redis_connection('history')
+        i = redis_conn.lrem('history_{0}'.format(user.id), 0, sku_id)
+        j = redis_conn.lpush('history_{0}'.format(user.id), sku_id)
+        k = redis_conn.ltrim('history_{0}'.format(user.id), 0, 4)
+        return JsonResponse({'code': 0, 'message': 'OK'})
+
+    def get(self, request):
+        user = request.user
+        redis_conn = get_redis_connection('history')
+        sku_ids = redis_conn.lrange('history_{0}'.format(user.id), 0, 4)
+        skus = []
+        nginx_url = 'http://192.168.19.131:8888/'
+        for sku_id in sku_ids:
+            sku = SKU.objects.get(id=sku_id)
+            sku_dict = {'id': sku.id,
+                        'name': sku.name,
+                        'price': sku.price,
+                        'comments': sku.comments,
+                        'default_image_url': nginx_url + sku.default_image.name}
+            skus.append(sku_dict)
+            print(skus)
+
+        return JsonResponse({'code': 0, 'message': 'OK', 'skus': skus})

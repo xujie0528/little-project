@@ -5,4 +5,5 @@ urlpatterns = [
     re_path(r'^list/(?P<category_id>\d+)/skus/$', views.SKUListView.as_view()),
     re_path(r'^hot/(?P<category_id>\d+)/$', views.HotGoodsView.as_view()),
     re_path(r'^search/$', views.SKUSearchView.as_view()),
+    re_path(r'^browse_histories/$', views.BrowseHistoriesView.as_view()),
 ]
