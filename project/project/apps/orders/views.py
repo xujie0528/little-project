@@ -148,8 +148,16 @@ class OrderCommitView(View):
             sku_ids = cart_dict.keys()
 
             for sku_id in sku_ids:
-                sku = SKU.objects.get(id=sku_id)
-                count = cart_dict[sku_id]
+                for i in range(3):
+                    sku = SKU.objects.get(id=sku_id)
+                    count = cart_dict[sku_id]
+
+                # 记录原始库存和销量
+                origin_stock = sku.stock
+                origin_sales = sku.sales
+
+                # 打印下单提示信息
+                print('下单用户:{0}, 商品库存:{1}, 购买数量:{2}, 尝试第{3}次'.format(user.username, sku.stock, count, i + 1))
 
                 # 判断库存是否充足
                 if count > sku.stock:
@@ -158,12 +166,26 @@ class OrderCommitView(View):
                     return JsonResponse({'code': 400,
                                          'message': '商品库存不足'})
 
-                # 减少SKU商品库存, 增加销量
-                sku.stock -= count
-                sku.stock += count
-                sku.save()
+                # 更新商品库存和销量
+                new_stock = origin_stock - count
+                new_sales = origin_sales + count
 
-                # 增加对应的SPU商品销量
+                # 注意: update方法返回的是被更新的行数
+                # update tb_sku set stock=<new_stock>, sales=<new_sales>
+                # where id = <sku_id> and stock=<origin_stock>;
+                res = SKU.objects.filter(id=sku_id, stock=origin_stock).update(stock=new_stock,
+                                                                               sales=new_sales)
+
+                if res==0:
+                    if i==2:
+                        # 尝试下单更新了三次, 仍然失败, 报下单失败错误
+                        transaction.savepoint_rollback(sid)
+                        return JsonResponse({'code': 400,
+                                                 'message': '下单失败!'})
+                    # 更新失败, 重新进行尝试
+                    continue
+
+                # 增加对应SPU商品的销量
                 sku.spu.sales += count
                 sku.spu.save()
 
@@ -176,6 +198,9 @@ class OrderCommitView(View):
                 # 累计计算订单商品的总数量和总价格
                 total_count += count
                 total_amount += count*sku.price
+
+                # 更新成功, 跳出循环
+                break
 
             total_amount += freight
             order.total_count = total_count
