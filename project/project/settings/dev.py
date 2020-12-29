@@ -286,12 +286,12 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 # 支付宝开发者应用ID
 # 注意：此处替换为你的账号中沙箱应用的APPID，如果使用线上开发者应用，则替换为对应开发者应用的APPID
-ALIPAY_APPID = '2016090800464054'
+ALIPAY_APPID = '2021000116684343'
 # 是否使用沙箱环境
 # 注意：如果使用线上开发者应用，此处设置为：False
 ALIPAY_DEBUG = True
 # 支付宝网关地址
 # 注意：此处为支付宝沙箱环境的网关地址，如果使用线上开发者应用，此处需替换为支付宝线上环境的网关地址
-ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
+ALIPAY_URL = '	https://openapi.alipaydev.com/gateway.do'
 # 用户授权支付后的回调地址
 ALIPAY_RETURN_URL = "http://www.meiduo.site:8080/pay_success.html"
