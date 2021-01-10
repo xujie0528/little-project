@@ -24,3 +24,14 @@ class UserDayActiveView(APIView):
         }
         return Response(response_data)
 
+class UserDayOrderView(APIView):
+    permission_classes = [IsAdminUser]
+    def get(self, request):
+        now_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        conut = User.objects.filter(orders__create_time__gte = now_date).distinct().count()
+        # 返回响应数据
+        response_data = {
+            'data': now_date.date(),
+            'count': conut
+        }
+        return Response(response_data)
