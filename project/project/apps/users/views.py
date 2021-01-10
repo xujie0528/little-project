@@ -9,9 +9,11 @@ from django.http import JsonResponse
 from django_redis import get_redis_connection
 
 from project.utils.mixins import LoginRequiredMixin
+from rest_framework.generics import CreateAPIView
 
 from carts.utils import CartHelper
 from users.models import User, Address
+from users.serislizers import UserSerializer
 
 
 class UsernameCountView(View):
@@ -30,6 +32,8 @@ class MobileCountView(View):
         except Exception as e:
             return JsonResponse({'code': 400, 'message': '读取数据库错误'})
         return JsonResponse({'code': 0, 'message': 'OK', 'count': count})
+
+
 
 
 class RegisterView(View):
