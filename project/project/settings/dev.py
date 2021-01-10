@@ -68,6 +68,8 @@ MIDDLEWARE = [
 CORS_ORIGIN_WHITELIST = (
     # 将异步跨域请求中，Origin请求头携带的源请求地址添加到此处的白名单中
     'http://www.meiduo.site:8080',
+    # 备注：允许源地址 `http://127.0.0.1:9999` 向当前 API 服务器发起跨域请求
+    'http://127.0.0.1:9999',
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 

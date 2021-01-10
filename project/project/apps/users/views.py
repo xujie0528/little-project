@@ -13,7 +13,7 @@ from rest_framework.generics import CreateAPIView
 
 from carts.utils import CartHelper
 from users.models import User, Address
-from users.serislizers import UserSerializer
+
 
 
 class UsernameCountView(View):
