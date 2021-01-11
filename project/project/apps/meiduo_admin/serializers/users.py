@@ -62,3 +62,8 @@ class AdminAuthSerializer(serializers.ModelSerializer):
         user.token = token
 
         return user
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=('id', 'username', 'mobile', 'email')

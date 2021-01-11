@@ -14,9 +14,9 @@ class UserDayActiveView(APIView):
         # 查询数据库统计网站当日活跃用户
         now_date = timezone.now().replace(hour=0, minute=0, second=0,
                                           microsecond=0)
-        count = User.objects.filter(last_login__gte = now_date).count()
+        count = User.objects.filter(last_login__gte=now_date).count()
 
-        #返回响应数据
+        # 返回响应数据
         response_data = {
             # 年-月-日
             'data': now_date.date(),
@@ -24,17 +24,20 @@ class UserDayActiveView(APIView):
         }
         return Response(response_data)
 
+
 class UserDayOrderView(APIView):
     permission_classes = [IsAdminUser]
+
     def get(self, request):
         now_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        conut = User.objects.filter(orders__create_time__gte = now_date).distinct().count()
+        conut = User.objects.filter(orders__create_time__gte=now_date).distinct().count()
         # 返回响应数据
         response_data = {
             'data': now_date.date(),
             'count': conut
         }
         return Response(response_data)
+
 
 class UserMonthCountView(APIView):
     # 指定权限, 只有管理员用户可以访问
@@ -54,17 +57,17 @@ class UserMonthCountView(APIView):
         # 每日新增用户数量
         month_list = []
         while current_date <= now_date:
-            next_date = current_date + timezone.timedelta(days = 1)
+            next_date = current_date + timezone.timedelta(days=1)
             # 统计当天新增用户量
-            count = User.objects.filter(date_joined__gte = current_date,
-                                        date_joined__lt = next_date).count()
+            count = User.objects.filter(date_joined__gte=current_date,
+                                        date_joined__lt=next_date).count()
 
             month_list.append({
-                'count':count,
+                'count': count,
                 'date': current_date.date()
             })
 
             current_date = next_date
 
-            #返回响应数据
-            return Response(month_list)
+        # 返回响应数据
+        return Response(month_list)

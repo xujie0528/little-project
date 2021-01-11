@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -103,8 +103,8 @@ DATABASES = {
         'NAME': 'projectbase',
         'HOST': '192.168.19.131',
         'PORT': 3306,
-        'USER': 'xujie',
-        'PASSWORD': '123456abc'
+        'USER': 'root',
+        'PASSWORD': 'mysql'
     }
 }
 
@@ -309,6 +309,8 @@ REST_FRAMEWORK = {
         # 此认证机制会自动校验 jwt token 的有效性，无效会直接返回401(未认证错误)
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
+    # 全局分页类设置
+    'DEFAULT_PAGINATION_CLASS': 'meiduo_admin.utils.pagination.StandardResultPagination',
 }
 
 # JWT 扩展配置

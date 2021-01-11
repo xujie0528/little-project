@@ -68,6 +68,8 @@ class PaymentStatusView(LoginRequiredMixin, View):
                                               "keys/app_private_key.pem"),
             alipay_public_key_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                 "keys/alipay_public_key.pem"),
+
+
             sign_type="RSA2",
             debug=settings.ALIPAY_DEBUG
         )
