@@ -1,5 +1,5 @@
 from django.urls import re_path
-from meiduo_admin.views import users, skus, statistical
+from meiduo_admin.views import users, skus, statistical, permission
 urlpatterns = [
     re_path(r'^authorizations/$', users.AdminAuthorizeView.as_view()),
     re_path(r'statistical/day_active/$', statistical.UserDayActiveView.as_view()),
@@ -13,4 +13,8 @@ urlpatterns = [
 from rest_framework.routers import SimpleRouter
 router = SimpleRouter()
 router.register('skus/images', skus.SKUImageViewSet, basename='images')
+urlpatterns += router.urls
+
+router = SimpleRouter()
+router.register('permission/perms', permission.PermissionViewSet, basename='perms')
 urlpatterns += router.urls

@@ -16,6 +16,7 @@ class FastDFSStorage(Storage):
 
         # 上传文件到 FastDFS 系统
         res = client.upload_by_buffer(content.read())
+        print(res)
 
         if res.get('Status') != 'Upload successed.':
             raise Exception('上传文件到FDFS系统失败')

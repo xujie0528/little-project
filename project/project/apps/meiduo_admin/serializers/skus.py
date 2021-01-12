@@ -4,21 +4,21 @@ from goods.models import SKUImage, SKU
 
 
 class SKUImageSerializer(serializers.ModelSerializer):
-    """sku图片序列化器类"""
+    """SKU图片序列化器类"""
     # 关联对象嵌套序列化
     sku = serializers.StringRelatedField(label='SKU商品名称')
-    # SKUImage模型中没有sku_id字段, 需要自己进行添加
+    # SKUImage 模型中没有 sku_id 字段，需要自己进行添加
     sku_id = serializers.IntegerField(label='SKU商品ID')
 
     class Meta:
-        model=SKUImage
+        model = SKUImage
         exclude = ('create_time', 'update_time')
 
     def validate_sku_id(self, value):
         """针对 sku_id 进行补充验证"""
         # SKU商品是否存在
         try:
-            sku = SKU.objects.get(id=value)
+            SKU.objects.get(id=value)
         except SKU.DoesNotExist:
             raise serializers.ValidationError('SKU商品不存在')
 
@@ -27,7 +27,7 @@ class SKUImageSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """上传 SKU 商品图片保存"""
         # 调用 ModelSerializer 中的 create 方法，进行上传文件保存和表记录添加
-        sku_image = super().create(validated_data)
+        sku_image = SKUImage.objects.create(**validated_data)
 
         # 判断是否需要设置 SKU 商品的默认图片
         sku = sku_image.sku
@@ -37,6 +37,7 @@ class SKUImageSerializer(serializers.ModelSerializer):
             sku.save()
 
         return sku_image
+
 
 class SKUSimpleSerializer(serializers.ModelSerializer):
     """SKU商品序列化器类"""

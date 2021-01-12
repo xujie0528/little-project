@@ -319,9 +319,11 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 }
 
-# 配置 Django 框架的默认文件存储类
-DEFAULT_FILE_STORAGE = 'project.utils.fastdfs.storage.FastDFSStorage'
+
+
 # FastDFS 客户端配置文件 client.conf 的路径
 FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs/client.conf')
 # FastDFS 文件存储系统 storage 容器中 nginx 服务器的地址
 FDFS_URL = 'http://192.168.19.131:8888/'
+# 配置 Django 框架的默认文件存储类
+DEFAULT_FILE_STORAGE = 'project.utils.fastdfs.storage.FastDFSStorage'
