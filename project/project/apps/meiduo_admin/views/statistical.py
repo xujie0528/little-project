@@ -2,7 +2,11 @@ from django.utils import timezone
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from meiduo_admin.serializers.goods import GoodsSerializer
+
+from goods.models import GoodsVisitCount
 from users.models import User
+
 
 
 class UserDayActiveView(APIView):
@@ -100,3 +104,14 @@ class DayIncrementView(APIView):
             'count': count
         }
         return Response(response_data)
+
+
+class GoodsDayViewsView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        now_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        response_data = GoodsVisitCount.objects.filter(date__gte=now_date)
+        serializer = GoodsSerializer(response_data, many=True)
+
+        return Response(serializer.data)
