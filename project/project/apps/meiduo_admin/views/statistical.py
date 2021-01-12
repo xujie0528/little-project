@@ -71,3 +71,17 @@ class UserMonthCountView(APIView):
 
         # 返回响应数据
         return Response(month_list)
+
+
+class TotalCountView(APIView):
+    permission_classes = [IsAdminUser]
+    def get(self, request):
+        now_date = timezone.now()
+        count = User.objects.filter(date_joined__lt = now_date).count()
+
+        response_data = {
+            'date': now_date.date(),
+            'count': count
+        }
+
+        return Response(response_data)
