@@ -75,13 +75,28 @@ class UserMonthCountView(APIView):
 
 class TotalCountView(APIView):
     permission_classes = [IsAdminUser]
+
     def get(self, request):
         now_date = timezone.now()
-        count = User.objects.filter(date_joined__lt = now_date).count()
+        count = User.objects.filter(date_joined__lt=now_date).count()
 
         response_data = {
             'date': now_date.date(),
             'count': count
         }
 
+        return Response(response_data)
+
+
+class DayIncrementView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        now_date = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        count = User.objects.filter(date_joined__gte=now_date).count()
+
+        response_data = {
+            'date': now_date.date(),
+            'count': count
+        }
         return Response(response_data)

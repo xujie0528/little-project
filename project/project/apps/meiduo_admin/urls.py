@@ -7,6 +7,7 @@ urlpatterns = [
     re_path(r'statistical/day_orders/$', statistical.UserDayOrderView.as_view()),
     re_path(r'^statistical/month_increment/$', statistical.UserMonthCountView.as_view()),
     re_path(r'^statistical/total_count/$', statistical.TotalCountView.as_view()),
+    re_path(r'^statistical/day_increment/$', statistical.DayIncrementView.as_view()),
     re_path(r'^users/$', users.UserInfoView.as_view()),
     re_path(r'^skus/simple/$', skus.SKUSimpleView.as_view()),
     re_path(r'^permission/content_types/$', permissions.PermissionViewSet.as_view({
@@ -37,3 +38,4 @@ urlpatterns += router.urls
 router = SimpleRouter()
 router.register('permission/admins', permissions.AdminViewSet, basename='admins')
 urlpatterns += router.urls
+
