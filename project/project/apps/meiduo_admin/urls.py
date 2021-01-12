@@ -11,6 +11,9 @@ urlpatterns = [
     re_path(r'^permission/content_types/$', permissions.PermissionViewSet.as_view({
         'get': 'content_types'
     })),
+    re_path(r'^permission/simple/$', permissions.GroupViewSet.as_view(
+        {'get': 'simple'}
+    )),
 ]
 
 # 图片管理
@@ -21,4 +24,8 @@ urlpatterns += router.urls
 
 router = SimpleRouter()
 router.register('permission/perms', permissions.PermissionViewSet, basename='perms')
+urlpatterns += router.urls
+
+router = SimpleRouter()
+router.register('permission/groups', permissions.GroupViewSet, basename='groups')
 urlpatterns += router.urls
