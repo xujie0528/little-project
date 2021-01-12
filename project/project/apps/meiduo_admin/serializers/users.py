@@ -66,5 +66,38 @@ class AdminAuthSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model=User
+        model= User
         fields=('id', 'username', 'mobile', 'email')
+
+
+class UsersSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(label='用户名')
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'password', 'mobile', 'email')
+
+        extra_kwargs = {
+            'password': {
+                'write_only': True
+            }
+        }
+
+        def validate(self, attrs):
+            username = attrs['username']
+            password = attrs['password']
+
+            try:
+                user = User.objects.get(username=username, is_staff=False)
+            except User.DOESNotExist:
+                raise serializers.ValidationError('用户名或密码错误')
+            else:
+                if not user.check_password(password):
+                    raise serializers.ValidationError('用户名或密码错误')
+
+                attrs['user'] = user
+            return attrs
+
+        def create(self, validated_data):
+            user = User.objects.create_user(**validated_data)
+            return user

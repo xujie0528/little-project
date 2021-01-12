@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,7 +14,9 @@ class AdminAuthorizeView(CreateAPIView):
     serializer_class = AdminAuthSerializer
 
 
-class UserInfoView(ListAPIView):
+
+
+class UsersView(ListCreateAPIView):
     """指定权限, 只有管理员用户可以访问"""
     permission_classes = [IsAdminUser]
     serializer_class = UserSerializer
@@ -31,3 +33,6 @@ class UserInfoView(ListAPIView):
             users = User.objects.filter(is_staff=False)
 
         return users
+
+
+
